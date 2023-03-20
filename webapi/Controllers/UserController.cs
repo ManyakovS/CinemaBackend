@@ -24,7 +24,9 @@ namespace webapi.Controllers
         public async Task<ActionResult<List<User>>> AddUser(User newUser)
         {
             if (newUser != null)
-            {
+            {   
+                AuthOptions authOptions = new AuthOptions();
+                newUser.Token = authOptions.GetToken(newUser.UserName).ToString();
                 appDbContext.Users.Add(newUser);
                 await appDbContext.SaveChangesAsync();
                 return Ok(await appDbContext.Users.ToListAsync());
@@ -48,7 +50,7 @@ namespace webapi.Controllers
 
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await appDbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await appDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
             if(user != null)
             {
                 return Ok(user);
@@ -63,9 +65,9 @@ namespace webapi.Controllers
         {
             if(updatedUser != null)
             {
-                var user = await appDbContext.Users.FirstOrDefaultAsync(e => e.Id == updatedUser.Id);
+                var user = await appDbContext.Users.FirstOrDefaultAsync(e => e.UserId == updatedUser.UserId);
                 user!.Name = updatedUser.Name;
-                user.Adress = updatedUser.Adress;
+                user.CinemaAdress = updatedUser.CinemaAdress;
                 await appDbContext.SaveChangesAsync();
                 return Ok(user);
             }
@@ -78,7 +80,7 @@ namespace webapi.Controllers
 
         public async Task<ActionResult<List<User>>> DeleteUser(int id)
         {
-            var user = await appDbContext.Users.FirstOrDefaultAsync(e => e.Id == id);
+            var user = await appDbContext.Users.FirstOrDefaultAsync(e => e.UserId == id);
             if( user != null) 
             {
                 appDbContext.Users.Remove(user);
