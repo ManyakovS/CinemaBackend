@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using webapi.Data;
 using webapi.Models;
 
@@ -36,7 +39,7 @@ namespace webapi.Controllers
 
         
         //Get all users
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "Admin")]
 
         public async Task<ActionResult<List<User>>> GetAllUser()
         {
@@ -46,7 +49,7 @@ namespace webapi.Controllers
 
 
         //Read single users
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}"), Authorize(Roles = "Admin")]
 
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -58,16 +61,54 @@ namespace webapi.Controllers
             return NotFound("User is not avaiable");
         }
 
+        //Read single users
+        [HttpGet("GetUserOnLogin"), Authorize(Roles = "User")]
+
+        public async Task<ActionResult<User>> GetUserOnLogin(string UserName)
+        {
+            var user = await appDbContext.Users.FirstOrDefaultAsync(x => x.UserName == UserName);
+            if (user != null)
+            {
+                return Ok(user);
+            }
+            return NotFound("User is not avaiable");
+        }
+
         //Update user
 
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "User")]
         public async Task<ActionResult<User>> UpdateUser(User updatedUser)
         {
             if(updatedUser != null)
             {
                 var user = await appDbContext.Users.FirstOrDefaultAsync(e => e.UserId == updatedUser.UserId);
-                user!.Name = updatedUser.Name;
-                user.CinemaAdress = updatedUser.CinemaAdress;
+                if (updatedUser.UserName != null)
+                    user!.UserName = updatedUser.UserName;
+
+                if (updatedUser.PasswordHash != null)
+                    user!.PasswordHash = BCrypt.Net.BCrypt.HashPassword(updatedUser.PasswordHash);
+
+                if (updatedUser.Name != null)
+                    user!.Name = updatedUser.Name;
+
+                if (updatedUser.LastName != null)
+                    user!.LastName = updatedUser.LastName;
+
+                if (updatedUser.Email != null)
+                    user!.Email = updatedUser.Email;
+
+                if (updatedUser.Icon != null)
+                    user.Icon = updatedUser.Icon;
+
+                if (updatedUser.Theme != null)
+                    user.Theme = updatedUser.Theme;
+
+                if (updatedUser.Language != null)
+                    user.Language = updatedUser.Language;
+
+                if (updatedUser.CinemaAdress != null)
+                    user.CinemaAdress = updatedUser.CinemaAdress;
+
                 await appDbContext.SaveChangesAsync();
                 return Ok(user);
             }
@@ -76,7 +117,7 @@ namespace webapi.Controllers
 
         //Delete user
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
 
         public async Task<ActionResult<List<User>>> DeleteUser(int id)
         {

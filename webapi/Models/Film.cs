@@ -10,8 +10,9 @@ public partial class Film
     public int FilmId { get; set; }
 
     public string Name { get; set; } = null!;
+    public string Description { get; set; } = null!;
     public int Duration { get; set; }
     public DateTime RentalStartDate { get; set; }
     public DateTime RentalEndtDate { get; set; }
-    public string? Director { get; set; }
+    public float Rating { get; set; }
 }

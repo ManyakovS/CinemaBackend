@@ -17,17 +17,17 @@ namespace webapi.Models
         [Key]
         public long UserId { get; set; }
 
-        public string PasswordHash { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Icon { get; set; } = "Default icon";
+        public string Icon { get; set; } = "DefaultIcon";
         public string Theme { get; set; } = "System";
         public string Language { get; set; } = "Ru";
         public string CinemaAdress { get; set; } = "Default";
-        public string Token { get; set; }
+        public string? Token { get; set; } = string.Empty;
         public DateTime RegistratedDate { get; set; } = DateTime.Now;
 
     }

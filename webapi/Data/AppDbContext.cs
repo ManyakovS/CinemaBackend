@@ -38,5 +38,25 @@ namespace webapi.Data
         {
             get; set;
         }
+        public DbSet<Assets> Assets
+        {
+            get; set;
+        }
+        public DbSet<Genre> Genres
+        {
+            get; set;
+        }
+        public DbSet<FilmWorker> FilmWorkers
+        {
+            get; set;
+        }
+        public DbSet<FilmFilmWorker> FilmFilmWorkers
+        {
+            get; set;
+        }
+        public DbSet<FilmGenre> FilmGenres
+        {
+            get; set;
+        }
     }
 }

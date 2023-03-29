@@ -10,21 +10,23 @@ public partial class Ticket
     [Key]
     public int TicketId { get; set; }
 
-    public string State { get; set; } = null!;
+    public string State { get; set; } = "Created";
+    public int? Cost { get; set; }
+
 
     [ForeignKey("session")]
     public int SessionId { get; set; }
-    public virtual Session session { get; set; }
+    public virtual Session? session { get; set; }
 
     [ForeignKey("place")]
     public int PlaceId { get; set; }
-    public virtual Place place { get; set; }
+    public virtual Place? place { get; set; }
 
     [ForeignKey("employee")]
     public int? EmployeeId { get; set; }
-    public virtual Employee employee { get; set; }
+    public virtual Employee? employee { get; set; }
 
     [ForeignKey("user")]
-    public long UserId { get; set; } = 0;
-    public virtual User user { get; set; }
+    public long? UserId { get; set; } = 0;
+    public virtual User? user { get; set; }
 }
