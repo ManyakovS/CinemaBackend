@@ -115,5 +115,16 @@ namespace webapi.Controllers
             return Ok(places);
         }
 
+        //Get place
+        [HttpGet("place/{PlaceId:int}"), Authorize(Roles = "User")]
+
+        public async Task<ActionResult<List<Ticket>>> GetSeat(int PlaceId)
+        {
+
+            var places = await appDbContext.Places.FromSqlRaw($"GetSeatsForId {PlaceId}").ToListAsync();
+
+            return Ok(places);
+        }
+
     }
 }

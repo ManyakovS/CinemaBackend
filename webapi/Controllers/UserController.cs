@@ -49,7 +49,7 @@ namespace webapi.Controllers
 
 
         //Read single users
-        [HttpGet("{id:int}"), Authorize(Roles = "Admin")]
+        [HttpGet("{id:int}"), Authorize(Roles = "User")]
 
         public async Task<ActionResult<User>> GetUser(int id)
         {

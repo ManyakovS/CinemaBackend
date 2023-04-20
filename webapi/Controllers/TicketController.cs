@@ -54,6 +54,26 @@ namespace webapi.Controllers
             return Ok(tickets);
         }
 
+        //Get all Tickets fo users
+        [HttpGet("/ticket/UserID/{UserID:int}"), Authorize(Roles = "User")]
+
+        public async Task<ActionResult<List<Ticket>>> GetTickersForUser(int UserID)
+        {
+            var tickets = await appDbContext.Tickets.FromSqlRaw($"GetTickersForUser {UserID}").ToListAsync();
+
+            for (int i = 0; i < tickets.Count; i++)
+            {
+                tickets[i].session = await appDbContext.Sessions.FirstOrDefaultAsync(x => x.SessionId == tickets[i].SessionId);
+
+                tickets[i].session.film = await appDbContext.Films.FirstOrDefaultAsync(x => x.FilmId == tickets[i].session.FilmId);
+
+                tickets[i].place = await appDbContext.Places.FirstOrDefaultAsync(x => x.PlaceId == tickets[i].PlaceId);
+            }
+
+            return Ok(tickets);
+        }
+
+
 
 
 
@@ -83,7 +103,7 @@ namespace webapi.Controllers
 
         //Update user
 
-        [HttpPut(Name = "PutTicket"), Authorize(Roles = "Admin")]
+        [HttpPut(Name = "PutTicket"), Authorize(Roles = "User")]
         public async Task<ActionResult<Ticket>> UpdateTicket(int TicketID, string state, int SessionID, int PlaceID, int EmployeeID, int UserID)
         {
             if(TicketID == 0 )
@@ -98,6 +118,8 @@ namespace webapi.Controllers
                 ticket.PlaceId = PlaceID;
             if (EmployeeID != 0) 
                 ticket.EmployeeId = EmployeeID;
+            if (UserID != 0)
+                ticket.UserId = UserID;
 
             await appDbContext.SaveChangesAsync();
             return Ok(ticket);

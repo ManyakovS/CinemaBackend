@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Data;
 using webapi.Data;
 using webapi.Models;
@@ -36,12 +37,40 @@ namespace webapi.Controllers
 
 
         //Get all films
-        [HttpGet(Name = "GetAllFilm"), Authorize(Roles = "User")]
+        [HttpGet("film/all"), Authorize(Roles = "User")]
 
         public async Task<ActionResult<List<Film>>> GetAllFilm()
         {
             var films = await appDbContext.Films.ToListAsync();
             return Ok(films);
+        }
+
+
+        //Get FilmNow and FilmFuture films
+        [HttpGet(Name = "GetAllFilmForViews"), Authorize(Roles = "User")]
+
+        public async Task<ActionResult<List<Film>>> GetAllFilmForViews()
+        {
+            var films = await appDbContext.Films.ToListAsync();
+
+            List<Film> filmNow = new List<Film>();
+            List<Film> filmFuture = new List<Film>();
+
+            foreach (var film in films)
+            {
+                if (film.RentalStartDate <= DateTime.Now && film.RentalEndtDate >= DateTime.Now.AddHours(6))
+                    filmNow.Add(film);
+                else if (film.RentalStartDate >= DateTime.Now.AddHours(6) && film.RentalEndtDate >= DateTime.Now.AddHours(6))
+                    filmFuture.Add(film);
+            };
+
+            var filmReturn = new Dictionary<int, List<Film>>()
+            {
+                { 0, filmNow },
+                { 1, filmFuture},
+            };
+
+            return Ok(filmReturn);
         }
 
 
@@ -52,6 +81,19 @@ namespace webapi.Controllers
         {
             var film = await appDbContext.Films.FirstOrDefaultAsync(x => x.FilmId == id);
             if(film != null)
+            {
+                return Ok(film);
+            }
+            return NotFound("Film is not avaiable");
+        }
+
+        //Read single film
+        [HttpGet("filmName/"), Authorize(Roles = "User")]
+
+        public async Task<ActionResult<Film>> GetFilmForFilmName(string filmName)
+        {
+            var film = await appDbContext.Films.FirstOrDefaultAsync(x => x.Name == filmName);
+            if (film != null)
             {
                 return Ok(film);
             }

@@ -20,6 +20,26 @@ namespace webapi.Models
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string Language { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
+        public string Theme { get; set; } = string.Empty;
+
+        public string? Token { get; set; } = string.Empty;
+
+        public string? RefreshToken { get; set; } = string.Empty;
+
+        public UserDto() { }
+
+        public UserDto(User user)
+        {
+            UserId = user.UserId;
+            UserName = user.UserName;
+            Password = user.PasswordHash;
+            Token = user.Token;
+            RefreshToken = user.RefreshToken;
+            Language = user.Language;
+            Icon = user.Icon;
+            Theme = user.Theme;
+        }
 
     }
 

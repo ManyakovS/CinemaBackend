@@ -61,6 +61,53 @@ namespace webapi.Controllers
         }
 
 
+
+        //Create session with Ticket
+        [HttpPost("PostSession/ticket"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<List<Session>>> AddSessionWithTicket(string Date, string Time, string TimeEnd, int FilmId, int CinemaHallId, int TicketCost)
+        {
+            if (DateTime.Parse(Date) >= DateTime.UtcNow && FilmId != 0 && CinemaHallId != 0)
+            {
+                if (TimeSpan.Parse(Time) > TimeSpan.Parse(TimeEnd))
+                    return BadRequest("Invalid time");
+
+                Session? newSession = new Session(Date, Time, TimeEnd);
+
+                Film? _film = await appDbContext.Films.FirstOrDefaultAsync(e => e.FilmId == FilmId);
+                if (_film != null)
+                {
+                    newSession.FilmId = FilmId;
+                    newSession.film = _film;
+                }
+                else
+                    return BadRequest("Invalid film id");
+
+                CinemaHall? _cinemaHall = await appDbContext.CinemaHalls.FirstOrDefaultAsync(e => e.CinemaHallId == CinemaHallId);
+                if (_cinemaHall != null)
+                {
+                    newSession.CinemaHallId = CinemaHallId;
+                    newSession.cinemaHall = _cinemaHall;
+                }
+                else
+                    return BadRequest("Invalid CinemaHall id");
+
+                appDbContext.Sessions.Add(newSession);
+                await appDbContext.SaveChangesAsync();
+
+                var sessions = await appDbContext.Sessions.ToListAsync();
+                int lenght = sessions.Max(s => s.SessionId);
+
+                return Ok(await appDbContext.Tickets.FromSqlRaw($"createTicket {TicketCost}, {lenght}").ToListAsync());
+            }
+            return BadRequest("Object instance not set");
+        }
+
+
+
+
+
+
+
         //Get all sessions
         [HttpGet(Name = "GetAllSession"), Authorize(Roles = "User")]
 

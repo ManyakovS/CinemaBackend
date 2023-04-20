@@ -27,8 +27,14 @@ namespace webapi.Models
         public string Theme { get; set; } = "System";
         public string Language { get; set; } = "Ru";
         public string CinemaAdress { get; set; } = "Default";
-        public string? Token { get; set; } = string.Empty;
         public DateTime RegistratedDate { get; set; } = DateTime.Now;
+
+        public string? Token { get; set; } = string.Empty;
+
+        public string? RefreshToken { get; set; } = string.Empty;
+        public DateTime? RefreshTokenCreated { get; set; } = DateTime.Now;
+
+        public DateTime? RefreshTokenExpires { get; set; }
 
     }
 
